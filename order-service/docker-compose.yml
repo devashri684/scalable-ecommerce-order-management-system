@@ -1,0 +1,25 @@
+#services:
+#  mysql:
+#    image: mysql:8.3.0
+#    container_name: mysql
+#    environment:
+#      MYSQL_ROOT_PASSWORD: devashri
+#      MYSQL_DATABASE: orderdb
+#    ports:
+#      - "3307:3306"
+#    volumes:
+#      - mysql_data:/var/lib/mysql
+#      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: devashri
+      MYSQL_DATABASE: orderdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
