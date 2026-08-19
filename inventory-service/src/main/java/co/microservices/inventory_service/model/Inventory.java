@@ -1,0 +1,26 @@
+package co.microservices.inventory_service.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "t_inventory")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Inventory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "sku_code", nullable = false)
+    private String skuCode;
+
+    @Column(nullable = false)
+    private Integer quantity;
+}
