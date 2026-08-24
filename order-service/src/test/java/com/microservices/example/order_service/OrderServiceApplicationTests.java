@@ -1,26 +1,30 @@
 package com.microservices.example.order_service;
 
+import com.microservices.example.order_service.stubs.InventoryClientStub;
 import io.restassured.RestAssured;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWireMock(port = 0)
+@Testcontainers
 class OrderServiceApplicationTests {
 
+	@Container
 	@ServiceConnection
 	static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0");
 
 	@LocalServerPort
 	private Integer port;
-
-	static {
-		mySQLContainer.start();
-	}
 
 	@BeforeEach
 	void setup() {
@@ -29,22 +33,26 @@ class OrderServiceApplicationTests {
 	}
 
 	@Test
-	void shouldSubmitOrder() {
-		String submitOrderJson = """
+	void shouldPlaceOrderSuccessfullyWhenInStock() {
+		String requestBody = """
                 {
-                    "skuCode": "iphone_15",
+                    "skuCode": "iPhone_15",
                     "price": 1000,
                     "quantity": 1
                 }
                 """;
 
+		// 1. Stub the inventory response via WireMock
+		InventoryClientStub.stubInventoryCall("iPhone_15", 1, true);
+
+		// 2. Execute order request and assert behavior
 		RestAssured.given()
 				.contentType("application/json")
-				.body(submitOrderJson)
+				.body(requestBody)
 				.when()
 				.post("/api/order")
 				.then()
 				.statusCode(201)
-				.body(Matchers.equalTo("Order Placed Successfully"));
+				.body(equalTo("Order Placed Successfully"));
 	}
 }
