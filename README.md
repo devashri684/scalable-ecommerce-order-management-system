@@ -153,8 +153,6 @@ Swagger/OpenAPI documentation is exposed through the API Gateway so developers c
 
 ## High-Level Architecture
 
-![OrderOps Architecture](./assets/Architecture.png)
-
 The system follows a layered distributed architecture:
 
 ```text
